@@ -9,13 +9,13 @@
 So, what kind of script is this?
 
 This shell script, will convert the screenshots taken by the Flameshot program into awesome image. 
-This script was created and ported from the Ruby script created by [Bandithijo](https://bandithijo.github.io/blog/memodifikasi-screenshot-dari-flameshot-dengan-imagemagick/)
+This script was built and ported from the Ruby script created by [Bandithijo](https://bandithijo.github.io/blog/memodifikasi-screenshot-dari-flameshot-dengan-imagemagick/)
 
 <br/><br/>
 
 ### 2 - SETUP
 ---
-- the simple steps needed to use this script, all you have to do is download the script. **Make sure the flameshot program is already running in the background**
+- the simple steps needed to use this script, all you have to do is download the script
 
 ```sh
 > wget https://raw.githubusercontent.com/berrabe/awesome-flameshot/master/awesome-flameshot
@@ -35,7 +35,7 @@ This script was created and ported from the Ruby script created by [Bandithijo](
 
 ### 3 - USAGE
 ---
-- All you have to do is run a simple command. And the rest, the script will do it for you
+- All you have to do is run a simple command. And the rest, the script will do it for you. **Make sure the flameshot program is already running in the background**
 
 ```sh
 > ./awesome-flameshot
