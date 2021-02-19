@@ -1,0 +1,115 @@
+#!/bin/bash
+
+# =============================================
+
+_SCREENSHOT_DIR_=$HOME
+_LOG_FILE_="./output.log"
+
+_FG_COLOR_='#666666'
+_BG_COLOR_='#ffffff'
+_BG_SIZE_=10
+
+_BORDER_SIZE_=1
+_SHADOW_SIZE_='50x10+0+10'
+
+_AUTHOR_POST_=( 'SouthWest' '+30+26' )
+_AUTHOR_NAME_="> $USER"
+
+_FONT_SIZE_=11
+_FONT_='iosevka-medium'
+
+# =============================================
+
+
+
+trap ctrl_c INT
+
+function ctrl_c() {
+
+	echo -ne "  -- Exiting --  "
+}
+
+function check() {
+
+	if [[ $? -eq 0 && ${PIPESTATUS[0]} -eq 0 ]]; then
+		echo -e " [ Success ]"
+	else
+		echo -e " [ Failed ]"
+		exit 1
+	fi
+}
+
+function get_latest_img() {	
+
+	_LATEST_IMAGE_=$(/bin/ls -th $_SCREENSHOT_DIR_ | grep -vE '.edited.png$' | grep -E '.png$' | head -n 1)
+
+	if [[ $( echo "$_LATEST_IMAGE_" | wc -w ) -eq 0 ]]; then
+		echo -e " [ No New Image Detected ]"
+		exit 1
+	else
+		echo -e " [ Success ] ($_LATEST_IMAGE_)"
+		_LATEST_IMAGE_="$_SCREENSHOT_DIR_/$_LATEST_IMAGE_"
+	fi
+}
+
+function convert() {
+
+	_target_file_=$( echo "$_LATEST_IMAGE_" | sed 's/.png/.edited.png/g'  )
+
+	printf "%-50s" "**|--[+]*Set*Image*Border*" | sed 's/ /./g' | sed 's/*/ /g'
+	magick convert $_LATEST_IMAGE_ -bordercolor $_FG_COLOR_ -border $_BORDER_SIZE_ $_target_file_ >> $_LOG_FILE_ 2>&1
+	check
+
+	printf "%-50s" "**|--[+]*Set*Image*Shadow*" | sed 's/ /./g' | sed 's/*/ /g'
+	magick convert $_target_file_ \( +clone -background black -shadow $_SHADOW_SIZE_ \) +swap -background none -layers merge +repage $_target_file_ >> $_LOG_FILE_ 2>&1 \
+	&& magick convert $_target_file_ -bordercolor $_BG_COLOR_ -border $_BG_SIZE_ $_target_file_ >> $_LOG_FILE_ 2>&1
+	check
+
+	printf "%-50s" "**|--[+]*Set*Image*Author*" | sed 's/ /./g' | sed 's/*/ /g'
+	echo -en "  $_AUTHOR_NAME_  " | magick convert $_target_file_ -gravity ${_AUTHOR_POST_[0]} -pointsize $_FONT_SIZE_ -fill $_BG_COLOR_ -undercolor $_FG_COLOR_ -font $_FONT_ -annotate ${_AUTHOR_POST_[1]} @- $_target_file_ \
+	>> $_LOG_FILE_ 2>&1 && magick convert $_target_file_ -gravity South -chop 0x$(( $_BG_SIZE_ / 2 )) $_target_file_ >> $_LOG_FILE_ 2>&1
+	check
+
+	printf "%-50s" "**|--[+]*Add*Top*/*North*BG*" | sed 's/ /./g' | sed 's/*/ /g'
+	magick convert $_target_file_ -gravity North -background $_BG_COLOR_ -splice 0x$(( $_BG_SIZE_ / 2 )) $_target_file_ >> $_LOG_FILE_ 2>&1
+	check
+
+	printf "%-50s" "**|--[+]*Set*sRGB*Image*Profile*" | sed 's/ /./g' | sed 's/*/ /g'
+	magick convert $_target_file_ -profile /usr/share/color/icc/colord/sRGB.icc $_target_file_ >> $_LOG_FILE_ 2>&1
+	check
+}
+
+function summary() {
+
+	_runtime_job_=$(($2-$1))
+	hours=$((_runtime_job_ / 3600)); minutes=$(( (_runtime_job_ % 3600) / 60 )); seconds=$(( (_runtime_job_ % 3600) % 60 ))
+
+	printf "%s %s\n" "  |--[+] Elapsed Time : " "$hours : $minutes : $seconds"
+	printf "%s %s\n" "  |--[+] Output File  : " "$_target_file_"
+	printf "%s %s  -->  $_LOG_FILE_\n\n" "  |--[+] Error Count  : " $(cat $_LOG_FILE_ | wc -l)
+}
+
+function main() {
+
+	echo -e "\n\n\t\t AWESOME FLAMESHOT\n"
+	rm -f $_LOG_FILE_
+	_start_job_=$(date +%s)
+	echo -e "\n\n [+] SCRENSHOTING"
+
+	printf "%-50s" "**|--[+]*Starting*Flameshot*" | sed 's/ /./g' | sed 's/*/ /g'
+	flameshot gui --raw --delay 1000 > /dev/null 2>&1
+	check
+
+	printf "%-50s" "**|--[+]*Checking*Latest*Image*" | sed 's/ /./g' | sed 's/*/ /g'
+	get_latest_img
+
+	echo -e "\n\n [+] CONVERTING"
+	convert
+
+	echo -e "\n\n [+] SUMMARY"
+	_end_job_=$(date +%s)
+	summary $_start_job_ $_end_job_
+}
+
+clear
+main
