@@ -12,11 +12,11 @@ _BG_SIZE_=10
 _BORDER_SIZE_=1
 _SHADOW_SIZE_='50x10+0+10'
 
-_AUTHOR_POST_=( 'SouthWest' '+30+26' )
-_AUTHOR_NAME_="> $USER"
+_AUTHOR_POST_=( 'SouthWest' '+30+28' )
+_AUTHOR_NAME_=" $USER $(date '+  %d.%m.%y   %H:%M')"
 
-_FONT_SIZE_=11
-_FONT_='iosevka-medium'
+_FONT_SIZE_=10
+_FONT_='agave-regular-Nerd-Font-Complete-Mono'
 
 # =============================================
 
