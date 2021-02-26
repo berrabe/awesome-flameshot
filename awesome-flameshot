@@ -44,7 +44,7 @@ function check() {
 	else
 		echo -e "${Light_Red} [ Failed ] ${NoColor}"
 
-		echo -e "\n\n${Light_Cyan} [+] FAILED | SUMMARY ${NoColor}"
+		echo -e "\n\n${Light_Cyan} [+] SUMMARY |${Light_Red} FAILED ${NoColor}"
 		_end_job_=$(date +%s)
 		summary $_start_job_ $_end_job_
 		exit 1
@@ -98,7 +98,13 @@ function summary() {
 
 	printf "%s %s\n" "  |--[+] Elapsed Time : " "$hours : $minutes : $seconds"
 	printf "%s %s\n" "  |--[+] Output File  : " "$_target_file_"
-	printf "%s %s  -->  $_LOG_FILE_\n\n" "  |--[+] Error Count  : " $(cat $_LOG_FILE_ 2> /dev/null | wc -l)
+
+	_error_count_=$(cat $_LOG_FILE_ 2> /dev/null | wc -l)
+	if [[ $_error_count_ -ge 1 ]]; then
+		printf "%s ${Light_Red}%s  -->  $_LOG_FILE_ ${NoColor}\n\n" "  |--[+] Error Count  : " $_error_count_
+	else
+		printf "%s ${Light_Green}%s  -->  $_LOG_FILE_ ${NoColor}\n\n" "  |--[+] Error Count  : " $_error_count_
+	fi
 }
 
 function main() {
