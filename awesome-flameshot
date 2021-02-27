@@ -3,7 +3,7 @@
 # =============================================
 
 _SCREENSHOT_DIR_=$HOME
-_LOG_FILE_="./output.log"
+_LOG_FILE_="$_SCREENSHOT_DIR_/.awesome-flameshot.log"
 
 _FG_COLOR_='#666666'
 _BG_COLOR_='#ffffff'
