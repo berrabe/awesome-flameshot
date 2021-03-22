@@ -5,18 +5,19 @@
 _SCREENSHOT_DIR_=$HOME
 _LOG_FILE_="$_SCREENSHOT_DIR_/.awesome-flameshot.log"
 
-_FG_COLOR_='#666666'
+_FG_COLOR_='#2F343F'
 _BG_COLOR_='#ffffff'
 _BG_SIZE_=10
 
-_BORDER_SIZE_=1
+_BORDER_SIZE_=0
 _SHADOW_SIZE_='50x10+0+10'
+_ROUNDED_CORNER_=7
 
-_AUTHOR_POST_=( 'SouthWest' '+30+28' )
-_AUTHOR_NAME_=" $USER $(date '+  %d.%m.%y   %H:%M')"
+_AUTHOR_POST_=( 'South' '+0+26' )
+_AUTHOR_NAME_="  $USER $(date '+   %d.%m.%y    %H:%M')"
 
-_FONT_SIZE_=10
-_FONT_='agave-regular-Nerd-Font-Complete-Mono'
+_FONT_SIZE_=9
+_FONT_='JetBrains-Mono-Bold-Nerd-Font-Complete'
 
 # =============================================
 
@@ -68,9 +69,36 @@ function convert() {
 
 	_target_file_=$( echo "$_LATEST_IMAGE_" | sed 's/.png/.edited.png/g'  )
 
-	printf "%-50s" "**|--[+]*Set*Image*Border*" | sed 's/ /./g' | sed 's/*/ /g'
-	magick convert "$_LATEST_IMAGE_" -bordercolor $_FG_COLOR_ -border $_BORDER_SIZE_ "$_target_file_" >> $_LOG_FILE_ 2>&1
+	# printf "%-50s" "**|--[+]*Set*Rounded*Corner*" | sed 's/ /./g' | sed 's/*/ /g'
+	# magick convert "$_LATEST_IMAGE_" \
+	#     -format 'roundrectangle 1,1 %[fx:w+4],%[fx:h+4] '"$_ROUNDED_CORNER_"','"$_ROUNDED_CORNER_"''\
+	#     info: > $_SCREENSHOT_DIR_/_rounded_.mvg
+	# magick convert "$_LATEST_IMAGE_" -border $_BORDER_SIZE_ -alpha transparent \
+	#     -background none -fill white -stroke none -strokewidth 0 \
+	#     -draw "@"$_SCREENSHOT_DIR_"/_rounded_.mvg" $_SCREENSHOT_DIR_/_rounded_mask_.png >> $_LOG_FILE_ 2>&1
+	# magick convert "$_LATEST_IMAGE_" -border $_BORDER_SIZE_ -alpha transparent \
+	#     -background none -fill none -stroke $_FG_COLOR_ -strokewidth $_BORDER_SIZE_ \
+	#     -draw "@"$_SCREENSHOT_DIR_"/_rounded_.mvg" $_SCREENSHOT_DIR_/_rounded_overlay_.png >> $_LOG_FILE_ 2>&1
+	# magick convert "$_LATEST_IMAGE_" -alpha set -bordercolor none -border $_BORDER_SIZE_  \
+	#     $_SCREENSHOT_DIR_/_rounded_mask_.png -compose DstIn -composite \
+	#     $_SCREENSHOT_DIR_/_rounded_overlay_.png -compose Over -composite \
+	#     "$_target_file_" >> $_LOG_FILE_ 2>&1
+	# check
+
+	printf "%-50s" "**|--[+]*Set*Rounded*Corner*" | sed 's/ /./g' | sed 's/*/ /g'
+	magick convert "$_LATEST_IMAGE_" \( +clone  -alpha extract -draw 'fill black polygon 0,0 0,'"$_ROUNDED_CORNER_"' '"$_ROUNDED_CORNER_"',0 fill white circle '"$_ROUNDED_CORNER_"','"$_ROUNDED_CORNER_"' '"$_ROUNDED_CORNER_"',0' \
+	\( +clone -flip \) -compose Multiply -composite \
+	\( +clone -flop \) -compose Multiply -composite \
+	\) -alpha off -compose CopyOpacity -composite -compose over "$_target_file_" >> $_LOG_FILE_ 2>&1
 	check
+
+	if [[ $_BORDER_SIZE_ -ne 0 ]]; then
+		printf "%-50s" "**|--[+]*Set*Image*Border*" | sed 's/ /./g' | sed 's/*/ /g'
+		magick "$_target_file_" \( -clone 0 -fill $_FG_COLOR_ -colorize 100 \) \
+		\( -clone 0 -alpha extract -virtual-pixel black -morphology edgein octagon:$_BORDER_SIZE_  \) \
+		-compose over -composite "$_target_file_" >> $_LOG_FILE_ 2>&1
+		check
+	fi
 
 	printf "%-50s" "**|--[+]*Set*Image*Shadow*" | sed 's/ /./g' | sed 's/*/ /g'
 	magick convert "$_target_file_" \( +clone -background black -shadow $_SHADOW_SIZE_ \) +swap -background none -layers merge +repage "$_target_file_" >> $_LOG_FILE_ 2>&1 \
