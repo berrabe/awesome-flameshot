@@ -130,7 +130,14 @@ function summary() {
     hours=$((_runtime_job_ / 3600)); minutes=$(( (_runtime_job_ % 3600) / 60 )); seconds=$(( (_runtime_job_ % 3600) % 60 ))
 
     printf "%s %s\n" "  |--[+] Elapsed Time : " "$hours : $minutes : $seconds"
-    printf "%s %s\n" "  |--[+] Output File  : " "$_target_file_"
+    printf "%s %s" "  |--[+] Output File  : " "$_target_file_"
+
+    xclip -selection clipboard -t image/png -i $_target_file_ >> $_LOG_FILE_ 2>&1
+    if [[ $? -eq 0 ]]; then
+        echo -e "${Light_Green} (Copied to Clipboard) ${NoColor}"
+    else
+        echo -e "${Light_Red} (Copy to Clipboard Failed) ${NoColor}"
+    fi
 
     _error_count_=$(cat $_LOG_FILE_ 2> /dev/null | wc -l)
     if [[ $_error_count_ -ge 1 ]]; then
