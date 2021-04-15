@@ -5,7 +5,7 @@
 _SCREENSHOT_DIR_=$HOME
 _LOG_FILE_="$_SCREENSHOT_DIR_/.awesome-flameshot.log"
 
-_FG_COLOR_='#2F343F'
+_FG_COLOR_='#C1C1C1'
 _BG_COLOR_='#ffffff'
 _BG_SIZE_=10
 
@@ -15,10 +15,12 @@ _SHADOW_SIZE_='50x10+0+10'
 _ROUNDED_CORNER_=7
 
 _AUTHOR_POST_=( 'South' '+0+26' )
-_AUTHOR_NAME_="  $USER $(date '+   %d.%m.%y    %H:%M')"
+_AUTHOR_NAME_="  $USER  $(date '+    %d.%m.%y     %H:%M')"
+_AUTHOR_COLOR_='#000000'
 
+# Get Lists Font With "convert -list font | grep -iE 'font:.*' | nl"
 _FONT_SIZE_=9
-_FONT_='JetBrains-Mono-Bold-Nerd-Font-Complete'
+_FONT_='JetBrainsMono-Nerd-Font-Medium'
 
 # =============================================
 
@@ -111,7 +113,7 @@ function convert() {
     check
 
     printf "%-50s" "**|--[+]*Set*Image*Author*" | sed 's/ /./g' | sed 's/*/ /g'
-    echo -en "  $_AUTHOR_NAME_  " | magick convert "$_target_file_" -gravity ${_AUTHOR_POST_[0]} -pointsize $_FONT_SIZE_ -fill $_BG_COLOR_ -undercolor $_FG_COLOR_ -font $_FONT_ -annotate ${_AUTHOR_POST_[1]} @- "$_target_file_" \
+    echo -en "  $_AUTHOR_NAME_  " | magick convert "$_target_file_" -gravity ${_AUTHOR_POST_[0]} -pointsize $_FONT_SIZE_ -fill $_AUTHOR_COLOR_ -undercolor $_FG_COLOR_ -font $_FONT_ -annotate ${_AUTHOR_POST_[1]} @- "$_target_file_" \
     >> $_LOG_FILE_ 2>&1 && magick convert "$_target_file_" -gravity South -chop 0x$(( $_BG_SIZE_ / 2 )) "$_target_file_" >> $_LOG_FILE_ 2>&1
     check
 
