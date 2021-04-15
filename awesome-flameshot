@@ -50,7 +50,7 @@ function check() {
 
         echo -e "\n\n${Light_Cyan} [+] SUMMARY |${Light_Red} FAILED ${NoColor}"
         _end_job_=$(date +%s)
-        summary $_start_job_ $_end_job_ 'failed'
+        summary $_start_job_ $_end_job_ 'failed' && notify-send -u critical -t 3000 "[ ERROR ]  Awesome-Flameshot : $_LOG_FILE_" >> $_LOG_FILE_ 2>&1
         exit 1
     fi
 }
