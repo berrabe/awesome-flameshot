@@ -11,7 +11,7 @@ So, what kind of script is this?
 This shell script, will convert the screenshots taken by the Flameshot program into awesome image. 
 This script was built and ported from the Ruby script created by [Bandithijo](https://bandithijo.github.io/blog/memodifikasi-screenshot-dari-flameshot-dengan-imagemagick)
 
-**⚠️ Note : Make sure the flameshot, xclip and imagemagick is already installed on your linux system**
+**⚠️ Note : Make sure the flameshot (v0.9.0+), xclip (0.13+) and imagemagick (7.0.11-5+) is already installed on your linux system**
 
 <br/><br/>
 
