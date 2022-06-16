@@ -1,4 +1,5 @@
 #!/bin/bash
+set -o pipefail
 
 # =============================================
 
@@ -160,7 +161,9 @@ function main() {
     echo -e "\n\n${Light_Cyan} [+] SCRENSHOTING ${NoColor}"
 
     printf "%-50s" "**|--[+]*Starting*Flameshot*" | sed 's/ /./g' | sed 's/*/ /g'
-    flameshot gui --raw --delay 1000 > /dev/null 2>&1
+    # check flameshot version, if v0.x.x (legacy) then enable --raw option
+    grep -qiE 'v0\.[0-9\.]+' <(flameshot --version 2>&1) && varFlameshotOption="--raw" || varFlameshotOption=""
+    flameshot gui $varFlameshotOption --delay 1000 > /dev/null 2>&1
     check
 
     printf "%-50s" "**|--[+]*Checking*Latest*Image*" | sed 's/ /./g' | sed 's/*/ /g'
